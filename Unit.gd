@@ -3,7 +3,8 @@ extends Node2D
 signal selected
 signal deselected
 
-var target_position: Vector2
+@onready var navigation_agent: NavigationAgent2D = $NavigationAgent2D
+
 var speed = 300.0
 var is_selected = false
 
@@ -19,7 +20,12 @@ var unit_visual: Polygon2D
 func _ready():
 	print("Unit _ready at position: ", position)
 	
-	target_position = position
+	# Wait for navigation to be ready
+	await get_tree().physics_frame
+	
+	# Configure navigation agent
+	navigation_agent.path_desired_distance = 10.0
+	navigation_agent.target_desired_distance = 20.0
 	
 	# Create selection indicator (circle)
 	selection_indicator = Node2D.new()
@@ -49,21 +55,30 @@ func _ready():
 	
 	print("Unit initialized with ", get_child_count(), " children")
 
-func _process(delta):
-	# Calculate separation force (always active to prevent stacking)
+func _physics_process(delta):
+	# Skip if navigation agent isn't ready or has finished
+	if not navigation_agent:
+		return
+	
+	if navigation_agent.is_navigation_finished():
+		# Still apply separation when stopped
+		var separation = calculate_separation()
+		if separation.length() > 0.1:
+			position += separation * delta
+		return
+	
+	# Get the next point in the path
+	var next_path_position = navigation_agent.get_next_path_position()
+	
+	# Calculate direction to next path point
+	var direction = (next_path_position - global_position).normalized()
+	var velocity = direction * speed
+	
+	# Add separation force for local avoidance
 	var separation = calculate_separation()
-	
-	# Move toward target
-	var to_target = target_position - position
-	var velocity = Vector2.ZERO
-	
-	if to_target.length() > 5.0:
-		velocity = to_target.normalized() * speed
-	
-	# Always add separation force
 	velocity += separation
 	
-	# Apply movement if there's any velocity
+	# Apply movement
 	if velocity.length() > 0.1:
 		position += velocity * delta
 
@@ -106,4 +121,5 @@ func get_selection_bounds() -> Rect2:
 	return Rect2(global_position - Vector2(25, 25), Vector2(50, 50))
 
 func set_target_position(pos: Vector2):
-	target_position = pos
+	if navigation_agent:
+		navigation_agent.target_position = pos

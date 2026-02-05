@@ -4,3 +4,8 @@
 
 [node name="Unit" type="Node2D"]
 script = ExtResource("1_unit")
+
+[node name="NavigationAgent2D" type="NavigationAgent2D" parent="."]
+path_desired_distance = 10.0
+target_desired_distance = 20.0
+avoidance_enabled = false

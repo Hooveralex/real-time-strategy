@@ -2,16 +2,47 @@ extends Node2D
 
 @onready var selection_box: Control = $SelectionLayer/SelectionBox
 @onready var camera: Camera2D = $Camera2D
+@onready var navigation_region: NavigationRegion2D = $NavigationRegion2D
+@onready var obstacle_manager: Node2D = $ObstacleManager
+@onready var navigation_manager: Node = $NavigationManager
 
 var units: Array[Node] = []
+
+# Navigation bounds - area where units can move
+var nav_bounds = Rect2(-1000, -800, 2000, 1600)
 
 func _ready():
 	print("Game _ready called")
 	
-	# Create units immediately
+	# Setup navigation system
+	setup_navigation()
+	
+	# Wait a frame for obstacles to be generated, then bake navigation
+	await get_tree().process_frame
+	bake_navigation()
+	
+	# Create units after navigation is ready
 	create_test_units()
 	
 	print("Game initialization complete")
+
+func setup_navigation():
+	print("Setting up navigation...")
+	navigation_manager.setup_navigation(navigation_region)
+	
+	# Connect to obstacle changes for automatic rebaking
+	obstacle_manager.obstacles_changed.connect(_on_obstacles_changed)
+
+func _on_obstacles_changed():
+	# Rebake navigation mesh when obstacles are added/removed
+	print("Obstacles changed, rebaking navigation...")
+	bake_navigation()
+
+func bake_navigation():
+	print("Baking navigation mesh...")
+	var obstacles = obstacle_manager.get_all_obstacles()
+	navigation_manager.bake_navigation_mesh(nav_bounds, obstacles)
+	print("Navigation mesh baked with ", obstacles.size(), " obstacles")
 
 func get_world_mouse_position() -> Vector2:
 	if camera:

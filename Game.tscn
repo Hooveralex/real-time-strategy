@@ -1,11 +1,21 @@
-[gd_scene load_steps=4 format=3 uid="uid://bq8x7k3m4n5o6"]
+[gd_scene load_steps=6 format=3 uid="uid://bq8x7k3m4n5o6"]
 
 [ext_resource type="Script" path="res://Game.gd" id="1_game"]
 [ext_resource type="Script" path="res://SelectionBox.gd" id="2_selection_box"]
 [ext_resource type="Script" path="res://CameraController.gd" id="3_camera"]
+[ext_resource type="Script" path="res://ObstacleManager.gd" id="4_obstacle_manager"]
+[ext_resource type="Script" path="res://NavigationManager.gd" id="5_navigation_manager"]
 
 [node name="Game" type="Node2D"]
 script = ExtResource("1_game")
+
+[node name="NavigationRegion2D" type="NavigationRegion2D" parent="."]
+
+[node name="ObstacleManager" type="Node2D" parent="."]
+script = ExtResource("4_obstacle_manager")
+
+[node name="NavigationManager" type="Node" parent="."]
+script = ExtResource("5_navigation_manager")
 
 [node name="Camera2D" type="Camera2D" parent="."]
 script = ExtResource("3_camera")
