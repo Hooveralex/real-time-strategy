@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://dh7t02a3hqleo"]
+
+[ext_resource type="Script" path="res://Obstacle.gd" id="1_obstacle"]
+
+[node name="Obstacle" type="StaticBody2D"]
+script = ExtResource("1_obstacle")
