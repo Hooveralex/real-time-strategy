@@ -20,12 +20,21 @@ var unit_visual: Polygon2D
 func _ready():
 	print("Unit _ready at position: ", position)
 	
-	# Wait for navigation to be ready
+	# Wait for navigation map to be ready
 	await get_tree().physics_frame
 	
 	# Configure navigation agent
 	navigation_agent.path_desired_distance = 10.0
 	navigation_agent.target_desired_distance = 20.0
+	
+	# Connect to velocity_computed for safer movement (optional but recommended)
+	# Make sure agent syncs with navigation map
+	call_deferred("_setup_navigation_agent")
+
+func _setup_navigation_agent():
+	# Wait for NavigationServer to sync
+	await get_tree().physics_frame
+	navigation_agent.set_navigation_map(get_world_2d().get_navigation_map())
 	
 	# Create selection indicator (circle)
 	selection_indicator = Node2D.new()
@@ -70,8 +79,13 @@ func _physics_process(delta):
 	# Get the next point in the path
 	var next_path_position = navigation_agent.get_next_path_position()
 	
+	# Skip if next position is same as current (agent not synced yet)
+	var to_next = next_path_position - global_position
+	if to_next.length() < 1.0:
+		return
+	
 	# Calculate direction to next path point
-	var direction = (next_path_position - global_position).normalized()
+	var direction = to_next.normalized()
 	var velocity = direction * speed
 	
 	# Add separation force for local avoidance

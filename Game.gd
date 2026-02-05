@@ -69,15 +69,42 @@ func create_test_units():
 	print("Created ", units.size(), " units")
 
 func _input(event):
-	# Reload game with R key
+	# Keyboard controls
 	if event is InputEventKey and event.pressed:
 		if event.keycode == KEY_R:
+			# Reload game
 			print("Reloading...")
 			get_tree().reload_current_scene()
 			return
 		elif event.keycode == KEY_F:
+			# Focus camera on selected units
 			if camera and camera.has_method("focus_on_selected_units"):
 				camera.focus_on_selected_units()
+			return
+		elif event.keycode == KEY_O:
+			# Add obstacle at mouse position
+			var pos = get_world_mouse_position()
+			var size = Vector2(randf_range(60, 120), randf_range(60, 120))
+			obstacle_manager.add_obstacle(pos, size)
+			print("Added obstacle at ", pos)
+			return
+		elif event.keycode == KEY_X:
+			# Remove obstacle at mouse position
+			var pos = get_world_mouse_position()
+			var obstacle = obstacle_manager.get_obstacle_at_position(pos)
+			if obstacle:
+				obstacle_manager.remove_obstacle(obstacle)
+				print("Removed obstacle at ", pos)
+			else:
+				print("No obstacle at ", pos)
+			return
+		elif event.keycode == KEY_C:
+			# Clear all obstacles (with Shift held to prevent accidents)
+			if event.shift_pressed:
+				obstacle_manager.clear_all_obstacles()
+				print("Cleared all obstacles")
+			else:
+				print("Press Shift+C to clear all obstacles")
 			return
 	
 	if event is InputEventMouseButton:
