@@ -15,6 +15,10 @@ func select_unit(unit: Node, clear_existing: bool = true):
 	if not is_instance_valid(unit):
 		return
 	
+	# Only allow selecting player units (team 0)
+	if unit.has_method("get_team") and unit.get_team() != 0:
+		return
+	
 	if clear_existing:
 		deselect_all()
 	
@@ -69,6 +73,10 @@ func select_units_in_box(box_rect: Rect2, clear_existing: bool = true):
 	
 	for unit in units:
 		if not is_instance_valid(unit):
+			continue
+		
+		# Only allow selecting player units (team 0)
+		if unit.has_method("get_team") and unit.get_team() != 0:
 			continue
 		
 		if unit.has_method("get_selection_bounds"):
