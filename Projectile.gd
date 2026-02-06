@@ -27,25 +27,21 @@ func _ready():
 		queue_free()
 		return
 	
-	# Create visual (small circle)
+	# Create visual (snowball sprite from sprite sheet)
 	_visual = Node2D.new()
 	add_child(_visual)
 	
-	var circle = Polygon2D.new()
-	var points = PackedVector2Array()
-	var radius = 5.0
-	for i in range(9):
-		var angle = (i * TAU) / 8
-		points.append(Vector2(cos(angle), sin(angle)) * radius)
-	circle.polygon = points
+	var spritesheet = preload("res://assets/spritesheet.png")
+	var snowball_sprite = Sprite2D.new()
+	snowball_sprite.texture = spritesheet
+	snowball_sprite.region_enabled = true
+	# Row 3 (y=417), use column 2 for a medium-sized snowball
+	snowball_sprite.region_rect = Rect2(512, 417, 256, 141)
+	snowball_sprite.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	# Scale down to projectile size (~14px)
+	snowball_sprite.scale = Vector2(0.12, 0.12)
 	
-	# Color based on source team
-	if source_team == 0:
-		circle.color = Color(1.0, 0.9, 0.3)  # Yellow for player
-	else:
-		circle.color = Color(1.0, 0.4, 0.2)  # Orange-red for enemy
-	
-	_visual.add_child(circle)
+	_visual.add_child(snowball_sprite)
 
 func _process(delta):
 	# Update target position if target is still alive (tracking)

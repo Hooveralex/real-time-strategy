@@ -29,12 +29,19 @@ var min_separation_dist = 70.0    # Units will maintain at least this much dista
 
 # Visual components
 var selection_indicator: Node2D
-var unit_visual: Polygon2D
+var unit_visual: Sprite2D
 var health_bar: Node2D
 
-# Preloaded scenes
+# Preloaded scenes/resources
 var _projectile_scene = preload("res://Projectile.tscn")
 var _health_bar_script = preload("res://HealthBar.gd")
+var _spritesheet = preload("res://assets/spritesheet.png")
+
+# Sprite sheet layout (1024x558, 4 columns x 4 rows)
+# Row 0: Blue (player), Row 1: Red (enemy), Row 2: Green (unused), Row 3: Snowballs
+const SPRITE_FRAME_W = 256
+const SPRITE_FRAME_H = 139
+const SPRITE_ROWS = { 0: 0, 1: 139 }  # team -> y offset
 
 func _ready():
 	# Wait for navigation map to be ready
@@ -67,18 +74,16 @@ func _setup_navigation_agent():
 	selection_indicator.add_child(circle)
 	selection_indicator.visible = false
 	
-	# Create unit visual (colored square based on team)
-	unit_visual = Polygon2D.new()
-	unit_visual.polygon = PackedVector2Array([
-		Vector2(-12, -12),
-		Vector2(12, -12),
-		Vector2(12, 12),
-		Vector2(-12, 12)
-	])
-	if team == 0:
-		unit_visual.color = Color(0.2, 0.8, 0.3)  # Green for player
-	else:
-		unit_visual.color = Color(0.9, 0.2, 0.2)  # Red for enemy
+	# Create unit visual (sprite from sprite sheet)
+	unit_visual = Sprite2D.new()
+	unit_visual.texture = _spritesheet
+	unit_visual.region_enabled = true
+	var row_y = SPRITE_ROWS.get(team, 0)
+	unit_visual.region_rect = Rect2(0, row_y, SPRITE_FRAME_W, SPRITE_FRAME_H)
+	unit_visual.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	# Scale sprite to roughly match the previous unit size (~40px tall)
+	var sprite_scale = 0.35
+	unit_visual.scale = Vector2(sprite_scale, sprite_scale)
 	add_child(unit_visual)
 	
 	# Create health bar

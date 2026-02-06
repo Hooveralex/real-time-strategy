@@ -33,6 +33,23 @@
    - Trackpad pinch/expand gesture support
    - Press `F` to focus camera on selected units
 
+7. **Pathfinding & Obstacles**
+   - Godot NavigationRegion2D/NavigationAgent2D pathfinding
+   - Units navigate around obstacles intelligently
+   - Dynamic navigation mesh rebaking when obstacles change
+   - Random obstacle generation on startup
+   - Manual obstacle add (`O`), remove (`X`), and clear (`Shift+C`)
+
+8. **Combat System**
+   - Team-based units (player green, enemy red)
+   - Right-click an enemy to issue attack command
+   - Units pathfind into attack range, then throw projectiles
+   - Auto-attack nearest enemy when idle and in range
+   - Projectiles with parabolic arc animation
+   - Health system with visual health bars (green/yellow/red)
+   - Units die and are removed when health reaches 0
+   - Enemy units auto-attack nearby player units
+
 ## 🎯 Next Steps (Priority Order)
 
 ### 1. Unit Control Groups/Hotkeys ⭐ (Recommended Next)
@@ -41,23 +58,22 @@
    - Press number key twice to focus camera on group
    - Essential for managing multiple units efficiently
 
-### 2. Pathfinding
-   - Implement A* pathfinding or use Godot's Navigation2D
-   - Units navigate around obstacles intelligently
-   - Smooth path following
-   - *Note: Requires obstacles/terrain to be implemented first*
-
-### 3. Obstacles and Terrain
-   - Add walls, rocks, or terrain features to the map
-   - Units avoid obstacles using pathfinding
-   - Visual variety and strategic gameplay
-   - *Prerequisite for pathfinding system*
-
-### 4. Unit Types/Variants
+### 2. Unit Types/Variants
    - Create different unit types (soldier, tank, scout, etc.)
    - Different stats (speed, health, damage, range)
    - Visual differentiation (colors, sizes, sprites)
    - Different abilities or behaviors
+
+### 3. Enemy AI
+   - Enemies patrol or guard areas
+   - Enemies chase and engage player units that get close
+   - Different AI behaviors (aggressive, defensive, patrol)
+   - Wave-based enemy spawning
+
+### 4. Attack-Move Command
+   - `A` + click to issue attack-move
+   - Units move to target position but engage enemies along the way
+   - Essential RTS micro-management tool
 
 ### 5. Building Placement
    - Place structures on the map
@@ -71,17 +87,22 @@
    - Use resources to build units/structures
    - Resource nodes on the map
 
+### 7. Unit Production
+   - Select a building to produce units
+   - Production queue with progress bar
+   - Rally point for newly created units
+
 ## 🔮 Future Ideas
 
-- Unit health/damage system
-- Combat mechanics (attacking, defending)
-- AI/command system for units
 - Minimap
-- Unit production queues
+- Fog of war
 - Tech tree/research system
 - Multiplayer support
 - Save/load game state
+- Sound effects and music
+- Unit formations (line, wedge, box)
+- Terrain types affecting movement speed
 
 ---
 
-*Last Updated: After implementing camera controls with trackpad support*
+*Last Updated: After implementing combat system with projectiles, health, and team-based units*
